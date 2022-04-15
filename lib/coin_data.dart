@@ -42,7 +42,7 @@ class CoinData {
     http.Response response = await http.get(url);
     if(response.statusCode == 200){
       var decodedData = jsonDecode(response.body);
-      return decodedData;
+      return decodedData['rate'];
     } else{
       print(response.statusCode);
     }
