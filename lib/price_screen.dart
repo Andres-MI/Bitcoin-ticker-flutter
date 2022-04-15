@@ -12,6 +12,8 @@ class PriceScreen extends StatefulWidget {
 class _PriceScreenState extends State<PriceScreen> {
 
   String selectedCurrency = 'USD';
+  String totalExchange = '?';
+  CoinData coinData = CoinData();
 
   CupertinoPicker iOSPicker(){
     List<Text> pickerItems = [];
@@ -33,9 +35,15 @@ class _PriceScreenState extends State<PriceScreen> {
         items: dropdownItems,
         onChanged: (value) {
           setState(() {
-            selectedCurrency = value;
+            selectedCurrency = value!;
           });
         });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    updateUI();
   }
 
   @override
@@ -59,7 +67,7 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = ? USD',
+                  '1 BTC = $totalExchange USD',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,
@@ -79,5 +87,16 @@ class _PriceScreenState extends State<PriceScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> updateUI() async {
+    var exchangeData = await coinData.getCoinData(crypto: 'BTC', fiat: 'USD');
+    if(exchangeData == null){
+      totalExchange = '??';
+    } else {
+      setState(() {
+        totalExchange = (exchangeData['rate'] as double).toStringAsFixed(2);
+      });
+    }
   }
 }
